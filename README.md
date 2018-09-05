@@ -12,12 +12,12 @@ This package requires React 16.4.1 and higher.
 
 ## Installation
 
-`npm i react-forge-viewer --save`
+`npm i react-join-forge-viewer --save`
 
 ## Example
 ```jsx
 import React, { Component } from 'react';
-import ForgeViewer from 'react-forge-viewer';
+import ForgeViewer from 'react-join-forge-viewer';
 import './App.css';
 
 class App extends Component {

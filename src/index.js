@@ -113,15 +113,28 @@ class ForgeViewer extends React.Component {
 	reviewDocuments(){
 		if(this.viewer){
 			this.clearErrors();
-			console.log('reviewing documents...');
+			console.log('reviewing url or urn documents...');
 			//let keys = Object.keys(this.docs);
 			this.setState({empty:(this.docs.length == 0)});
 			this.docs.forEach(urn => {
 				this.loadDocument(urn);
 			});
+			this.docs.forEach(url => {
+				this.loadLocalDocument(url);
+			});
 		}
 	}
 
+	loadLocalDocument(url){
+	  let documentId = `${url}`;
+    let successHandler = this.handleLoadDocumentSuccess.bind(this);
+    let errorHandler = this.handleLoadDocumentError.bind(this);
+
+    Autodesk.Viewing.Document.load(
+      documentId, successHandler, errorHandler
+    );
+	}
+	
   loadDocument(urn){
 		console.log('Forge Viewer is loading document:', urn);
 

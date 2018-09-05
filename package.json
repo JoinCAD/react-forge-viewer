@@ -1,7 +1,7 @@
 {
-  "name": "react-forge-viewer",
+  "name": "react-join-forge-viewer",
   "version": "0.1.0",
-  "description": "A component wrapper to quickly add the Forge model viewer in your React apps.",
+  "description": "A component wrapper to add the Forge model viewer in your React apps.",
   "main": "build/index.js",
   "license": "MIT",
   "keywords": [
@@ -13,9 +13,10 @@
     "AutoCAD",
     "CAD",
     "React",
-    "Outer Labs"
+    "Outer Labs",
+    "Join"
   ],
-  "homepage": "https://github.com/outer-labs/react-forge-viewer",
+  "homepage": "https://github.com/JoinCAD/react-forge-viewer",
   "peerDependencies": {
     "react": "^16.4.1"
   },
