@@ -647,7 +647,7 @@ var ForgeViewer = function (_React$Component) {
       var modelId = '' + url;
       var successHandler = this.handleLoadModelSuccess.bind(this);
       var errorHandler = this.handleLoadModelError.bind(this);
-      this.viewer.loadModel(documentId, [], successHandler, errorHandler);
+      this.viewer.loadModel(modelId, [], successHandler, errorHandler);
     }
   }, {
     key: 'isArrayDifferent',
