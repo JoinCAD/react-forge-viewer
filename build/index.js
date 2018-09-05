@@ -554,13 +554,13 @@ var ForgeViewer = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (ForgeViewer.__proto__ || Object.getPrototypeOf(ForgeViewer)).call(this, props));
 
-    _this.docs = [];
+    _this.models = [];
     _this.state = { enable: false, error: false, empty: true };
     _this.viewerDiv = _react2.default.createRef();
     _this.viewer = null;
 
     //if url already given when component is created
-    if (typeof props.url != 'undefined' && props.url != '') _this.docs.push(props.url);
+    if (typeof props.url != 'undefined' && props.url != '') _this.models.push(props.url);
     return _this;
   }
 
@@ -613,27 +613,11 @@ var ForgeViewer = function (_React$Component) {
       if (!errorCode) {
         console.log('Forge Viewer has successfully started.');
         this.setState({ enable: true });
-        this.reviewDocuments();
+        this.reviewModels();
       } else {
         console.error('Error starting Forge Viewer - code:', errorCode);
         this.handleViewerError(errorCode);
       }
-    }
-  }, {
-    key: 'handleLoadDocumentSuccess',
-    value: function handleLoadDocumentSuccess(doc) {
-      console.log("Forge viewer has successfully loaded document:", doc);
-
-      //raise an event so caller can select a viewable to display
-      if (this.props.onDocumentLoad) this.props.onDocumentLoad(doc, views);
-    }
-  }, {
-    key: 'handleLoadDocumentError',
-    value: function handleLoadDocumentError(errorCode) {
-      this.setState({ error: true });
-
-      console.error('Error loading Forge document - errorCode:' + errorCode);
-      if (this.props.onDocumentError) this.props.onDocumentError(errorCode);
     }
   }, {
     key: 'clearErrors',
@@ -641,28 +625,28 @@ var ForgeViewer = function (_React$Component) {
       this.setState({ error: false });
     }
   }, {
-    key: 'reviewDocuments',
-    value: function reviewDocuments() {
+    key: 'reviewModels',
+    value: function reviewModels() {
       var _this2 = this;
 
       if (this.viewer) {
         this.clearErrors();
-        console.log('reviewing url documents...');
-        //let keys = Object.keys(this.docs);
-        this.setState({ empty: this.docs.length == 0 });
-        this.docs.forEach(function (url) {
-          _this2.loadDocument(url);
+        console.log('reviewing local models...');
+        //let keys = Object.keys(this.models);
+        this.setState({ empty: this.models.length == 0 });
+        this.models.forEach(function (url) {
+          _this2.loadModel(url);
         });
       }
     }
   }, {
-    key: 'loadDocument',
-    value: function loadDocument(url) {
+    key: 'loadModel',
+    value: function loadModel(url) {
       console.log('Forge Viewer is loading document:', url);
 
-      var documentId = '' + url;
-      var successHandler = this.handleLoadDocumentSuccess.bind(this);
-      var errorHandler = this.handleLoadDocumentError.bind(this);
+      var modelId = '' + url;
+      var successHandler = this.handleLoadModelSuccess.bind(this);
+      var errorHandler = this.handleLoadModelError.bind(this);
       this.viewer.loadModel(documentId, [], successHandler, errorHandler);
     }
   }, {
@@ -680,17 +664,17 @@ var ForgeViewer = function (_React$Component) {
       //console.log('props urn:', this.props.urn, ' next props urn:', nextProps.urn)
       //new urn is null, empty or empty array
       if (!nextProps.url || nextProps.url === '' || typeof nextProps.url === 'undefined' || Array.isArray(nextProps.url) && nextProps.url.length == 0) {
-        //clear out views if any document was previously loaded
-        if (this.docs.length > 0) {
-          this.setDocuments([]);
+        //clear if models were previously loaded
+        if (this.models.length > 0) {
+          this.setModels([]);
         }
       } else if (Array.isArray(nextProps.url)) {
         //always have to check array because equivalence is per element
         if (this.isArrayDifferent(this.props.url, nextProps.url)) {
-          this.setDocuments(nextProps.url);
+          this.setModels(nextProps.url);
         }
       } else if (nextProps.url != this.props.url) {
-        this.setDocuments([nextProps.url]);
+        this.setModels([nextProps.url]);
       }
     }
   }, {
@@ -700,10 +684,10 @@ var ForgeViewer = function (_React$Component) {
       return true;
     }
   }, {
-    key: 'setDocuments',
-    value: function setDocuments(list) {
-      this.docs = list;
-      this.reviewDocuments(); //defer loading until viewer ready
+    key: 'setModels',
+    value: function setModels(list) {
+      this.models = list;
+      this.reviewModels(); //defer loading until viewer ready
     }
   }, {
     key: 'render',

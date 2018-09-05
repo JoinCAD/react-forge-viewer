@@ -1,7 +1,7 @@
 {
   "name": "react-join-forge-viewer",
-  "version": "0.1.5",
-  "description": "A component wrapper to add the Forge model viewer in your React apps.",
+  "version": "0.1.6",
+  "description": "A component wrapper to add a local SVF model Forge viewer in your React apps.",
   "main": "build/index.js",
   "license": "MIT",
   "keywords": [
