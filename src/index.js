@@ -7,14 +7,13 @@ class ForgeViewer extends React.Component {
   constructor(props){
     super(props);
 		this.docs = [];
-		this.views = {};
     this.state = {enable:false, error:false, empty:true};
     this.viewerDiv = React.createRef();
     this.viewer = null;
 
-		//if urn already given when component is created
-		if(typeof props.urn != 'undefined' && props.urn != '')
-			this.docs.push(props.urn);
+		//if url already given when component is created
+		if(typeof props.url != 'undefined' && props.url != '')
+			this.docs.push(props.url);
   }
 
   handleLoadModelSuccess(model){
@@ -74,18 +73,9 @@ class ForgeViewer extends React.Component {
 	handleLoadDocumentSuccess(doc) {
 		console.log("Forge viewer has successfully loaded document:", doc);
 
-		let views = Autodesk.Viewing.Document.getSubItemsWithProperties(
-			doc.getRootItem(), {'type': 'geometry'}, true
-		);
-
-		//augment viewables with the doc they came from
-		views.forEach(viewable => {
-			viewable.doc = doc;
-		})
-
 		//raise an event so caller can select a viewable to display
 		if(this.props.onDocumentLoad)
-			this.props.onDocumentLoad(doc, views);
+			this.props.onDocumentLoad(doc, views);	
 	}
 
 	handleLoadDocumentError(errorCode){
@@ -100,69 +90,26 @@ class ForgeViewer extends React.Component {
 	  this.setState({error:false});
 	}
 
-	clearViews(){
-		console.log('clearing all views.');
-		this.views = {};
-		if(this.viewer){
-			//restart viewer, for lack of ability to unload models
-			this.viewer.tearDown();
-			this.viewer.start();
-		}
-	}
-
 	reviewDocuments(){
 		if(this.viewer){
 			this.clearErrors();
-			console.log('reviewing url or urn documents...');
+			console.log('reviewing url documents...');
 			//let keys = Object.keys(this.docs);
 			this.setState({empty:(this.docs.length == 0)});
-			this.docs.forEach(urn => {
-				this.loadDocument(urn);
-			});
 			this.docs.forEach(url => {
-				this.loadLocalDocument(url);
+				this.loadDocument(url);
 			});
 		}
 	}
 
-	loadLocalDocument(url){
-	  let documentId = `${url}`;
+  loadDocument(url){
+		console.log('Forge Viewer is loading document:', url);
+
+    let documentId = `${url}`;
     let successHandler = this.handleLoadDocumentSuccess.bind(this);
     let errorHandler = this.handleLoadDocumentError.bind(this);
-
-    Autodesk.Viewing.Document.load(
-      documentId, successHandler, errorHandler
-    );
-	}
-	
-  loadDocument(urn){
-		console.log('Forge Viewer is loading document:', urn);
-
-    let documentId = `urn:${urn}`;
-    let successHandler = this.handleLoadDocumentSuccess.bind(this);
-    let errorHandler = this.handleLoadDocumentError.bind(this);
-
-    Autodesk.Viewing.Document.load(
-      documentId, successHandler, errorHandler
-    );
+		this.viewer.loadModel(documentId,[],successHandler, errorHandler);
   }
-
-	loadView(view){
-		console.log('loading view:', view.viewableID);
-		this.views[view.viewableID] = view;
-
-		let svfUrl = view.doc.getViewablePath(view);
-		let successHandler = this.handleLoadModelSuccess.bind(this);
-		let errorHandler = this.handleLoadModelError.bind(this);
-		let modelOptions = {
-			sharedPropertyDbPath: view.doc.getPropertyDbPath()
-		};
-
-		//load the specified model
-		this.viewer.loadModel(
-			svfUrl, modelOptions, successHandler, errorHandler
-		);
-	}
 
 	isArrayDifferent(current, next){
 		if(current == null && next == null)
@@ -178,81 +125,33 @@ class ForgeViewer extends React.Component {
 		return false;
 	}
 
-	shouldComponentUpdateURN(nextProps, nextState){
+	shouldComponentUpdateURL(nextProps, nextState){
 		//console.log('props urn:', this.props.urn, ' next props urn:', nextProps.urn)
 		//new urn is null, empty or empty array
-    if(!nextProps.urn || nextProps.urn === '' || typeof nextProps.urn === 'undefined' ||
-			(Array.isArray(nextProps.urn) && nextProps.urn.length == 0)){
+    if(!nextProps.url || nextProps.url === '' || typeof nextProps.url === 'undefined' ||
+			(Array.isArray(nextProps.url) && nextProps.url.length == 0)){
       //clear out views if any document was previously loaded
 			if(this.docs.length > 0){
 				this.setDocuments([]);
 			}
-    } else if(Array.isArray(nextProps.urn)){
+    } else if(Array.isArray(nextProps.url)){
 			//always have to check array because equivalence is per element
-			if(this.isArrayDifferent(this.props.urn, nextProps.urn)){
-				this.setDocuments(nextProps.urn);
+			if(this.isArrayDifferent(this.props.url, nextProps.url)){
+				this.setDocuments(nextProps.url);
 			}
-		} else if(nextProps.urn != this.props.urn){
-			this.setDocuments([nextProps.urn]);
+		} else if(nextProps.url != this.props.url){
+			this.setDocuments([nextProps.url]);
 		}
 	}
 
-	shouldComponentUpdateView(nextProps, nextState){
-		//the view property is empty, undefined, or empty array
-		if(!nextProps.view || typeof nextProps.view === 'undefined' ||
-			(Array.isArray(nextProps.view) && nextProps.view.length == 0)){
-			if(Object.keys(this.views).length > 0)
-				this.clearViews();
-		} else if(Array.isArray(nextProps.view)){
-			if(this.isArrayDifferent(this.props.view, nextProps.view)){
-				this.setViews(nextProps.view);
-			}
-		} else if(this.props.view != nextProps.view){
-			this.setViews([nextProps.view]);
-    }
-	}
-
 	shouldComponentUpdate(nextProps, nextState){
-		this.shouldComponentUpdateURN(nextProps, nextState);
-		this.shouldComponentUpdateView(nextProps, nextState);
+		this.shouldComponentUpdateURL(nextProps, nextState);
 		return true;
 	}
 
 	setDocuments(list){
 		this.docs = list;
-		this.clearViews();
 		this.reviewDocuments(); //defer loading until viewer ready
-	}
-
-	setViews(list){
-		//check to see if views were added or removed from existing list
-		let existing = Object.assign({},this.views);
-		let incremental = [];
-		list.forEach(view => {
-			if(existing.hasOwnProperty(view.viewableID))
-				//the view was previously in the list
-				delete existing[view.viewableID];
-			else {
-				//the view is newly added to the list
-				incremental.push(view);
-			}
-		});
-
-		//anything left in old's keys should be unloaded
-		let keys = Object.keys(existing);
-		if(keys.length > 0){
-			//views were removed, so restart viewer for lack of 'unload'
-			this.viewer.tearDown();
-			this.viewer.start();
-			list.forEach(view => {
-				this.loadView(view);
-			});
-		} else{
-			//load views incrementally rather than a complete teardown
-			incremental.forEach(view => {
-				this.loadView(view);
-			});
-		}
 	}
 
   render() {
