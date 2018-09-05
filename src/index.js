@@ -92,7 +92,7 @@ class ForgeViewer extends React.Component {
     let modelId = `${url}`;
     let successHandler = this.handleLoadModelSuccess.bind(this);
     let errorHandler = this.handleLoadModelError.bind(this);
-		this.viewer.loadModel(documentId,[],successHandler, errorHandler);
+		this.viewer.loadModel(modelId,[],successHandler, errorHandler);
   }
 
 	isArrayDifferent(current, next){
