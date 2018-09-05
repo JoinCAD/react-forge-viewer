@@ -666,13 +666,25 @@ var ForgeViewer = function (_React$Component) {
 
 			if (this.viewer) {
 				this.clearErrors();
-				console.log('reviewing documents...');
+				console.log('reviewing url or urn documents...');
 				//let keys = Object.keys(this.docs);
 				this.setState({ empty: this.docs.length == 0 });
 				this.docs.forEach(function (urn) {
 					_this2.loadDocument(urn);
 				});
+				this.docs.forEach(function (url) {
+					_this2.loadLocalDocument(url);
+				});
 			}
+		}
+	}, {
+		key: 'loadLocalDocument',
+		value: function loadLocalDocument(url) {
+			var documentId = '' + url;
+			var successHandler = this.handleLoadDocumentSuccess.bind(this);
+			var errorHandler = this.handleLoadDocumentError.bind(this);
+
+			Autodesk.Viewing.Document.load(documentId, successHandler, errorHandler);
 		}
 	}, {
 		key: 'loadDocument',
@@ -875,7 +887,7 @@ exports = module.exports = __webpack_require__(7)(false);
 
 
 // module
-exports.push([module.i, "\n.ForgeViewer{\n  \n}\n\n.ForgeViewer .scrim{\n  position:absolute;\n  width: 100%;\n  height:100%;\n  z-index: 1000;\n  background-color:#ededed;\n  color: #95a5a6;\n  display:flex;\n  align-items: center;\n  justify-content: center;\n}\n\n.ForgeViewer .scrim .message{\n  display:flex;\n  flex-direction: column;\n  align-items: center;\n}\n\n.ForgeViewer .scrim .message svg{\n  margin-bottom:10px;\n  width:50px;\n  height:50px;\n}\n", ""]);
+exports.push([module.i, "\r\n.ForgeViewer{\r\n  \r\n}\r\n\r\n.ForgeViewer .scrim{\r\n  position:absolute;\r\n  width: 100%;\r\n  height:100%;\r\n  z-index: 1000;\r\n  background-color:#ededed;\r\n  color: #95a5a6;\r\n  display:flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n}\r\n\r\n.ForgeViewer .scrim .message{\r\n  display:flex;\r\n  flex-direction: column;\r\n  align-items: center;\r\n}\r\n\r\n.ForgeViewer .scrim .message svg{\r\n  margin-bottom:10px;\r\n  width:50px;\r\n  height:50px;\r\n}\r\n", ""]);
 
 // exports
 
