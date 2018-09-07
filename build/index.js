@@ -593,7 +593,7 @@ var ForgeViewer = function (_React$Component) {
       console.log('Autodesk scripts have finished loading.');
 
       var options = {
-        env: 'AutodeskProduction', getAccessToken: this.props.onTokenRequest
+        env: 'Local', useADP: false
       };
 
       Autodesk.Viewing.Initializer(options, this.handleViewerInit.bind(this));

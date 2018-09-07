@@ -1,4 +1,4 @@
-# React Forge Viewer Component
+# React Join Forge Viewer Component
 
 ## Motivation
 Autodesk provides a web-based viewer that can load and display a wide range of 2D and 3D models (Revit, Navisworks, AutoCAD, etc.).
