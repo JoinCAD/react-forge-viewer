@@ -43,7 +43,9 @@ class ForgeViewer extends React.Component {
     console.log('Autodesk scripts have finished loading.');
 
 		let options = {
-			env: 'Local', getAccessToken: this.props.onTokenRequest, useADP: false
+      env: 'AutodeskProduction',
+      getAccessToken: this.props.onTokenRequest, 
+      useADP: false
 		};
 
 		Autodesk.Viewing.Initializer(
