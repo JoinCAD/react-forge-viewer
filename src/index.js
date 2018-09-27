@@ -17,16 +17,14 @@ class ForgeViewer extends React.Component {
   }
 
   handleLoadModelSuccess(model){
-    console.log('Model successfully loaded from Forge.', model);
-
-    if(this.props.onModelLoad)
-      this.props.onModelLoad(this.viewer, model);
+    //console.log('Model successfully loaded', model);
+    this.props.onModelLoad(this.viewer, model);
   }
 
   handleLoadModelError(errorCode){
     this.setState({error:true});
 
-    console.error('Error loading Forge model - errorCode:' + errorCode);
+    //console.error('Error loading Forge model - errorCode:' + errorCode);
     if(this.props.onModelError)
       this.props.onModelError(errorCode);
   }
@@ -34,13 +32,13 @@ class ForgeViewer extends React.Component {
   handleViewerError(errorCode){
     this.setState({error:true});
 
-    console.error('Error loading Forge Viewer. - errorCode:', errorCode);
+    //console.error('Error loading Forge Viewer. - errorCode:', errorCode);
     if(this.props.onViewerError)
       this.props.onViewerError(errorCode);
   }
 
   handleScriptLoad(){
-    console.log('Autodesk scripts have finished loading.');
+    //console.log('Autodesk scripts have finished loading.');
 
 		let options = {
       env: 'AutodeskProduction',
@@ -53,21 +51,24 @@ class ForgeViewer extends React.Component {
   }
 
   handleViewerInit(){
-    console.log('Forge Viewer has finished initializing.');
+    //console.log('Forge Viewer has finished initializing.');
 
     let container = this.viewerDiv.current;
 
     // Create Viewer instance so we can load models.
     this.viewer = new Autodesk.Viewing.Private.GuiViewer3D(container);
 
-    console.log('Starting the Forge Viewer...');
+    //console.log('Starting the Forge Viewer...');
     var errorCode = this.viewer.start();
     if (!errorCode){
-			console.log('Forge Viewer has successfully started.');
+      //console.log('Forge Viewer has successfully started...getting markups');
+      this.viewer.loadExtension('Autodesk.Viewing.MarkupsCore').then((markup)=>{
+            this.props.markupCore(markup,AutodeskNamespace('Autodesk.Viewing'));
+      });
 			this.setState({enable:true});
 			this.reviewModels();
 		} else{
-      console.error('Error starting Forge Viewer - code:', errorCode);
+      //console.error('Error starting Forge Viewer - code:', errorCode);
       this.handleViewerError(errorCode);
     }
   }
@@ -79,7 +80,7 @@ class ForgeViewer extends React.Component {
 	reviewModels(){
 		if(this.viewer){
 			this.clearErrors();
-			console.log('reviewing local models...');
+			//console.log('reviewing local models...');
 			//let keys = Object.keys(this.models);
 			this.setState({empty:(this.models.length == 0)});
 			this.models.forEach(url => {
@@ -89,7 +90,7 @@ class ForgeViewer extends React.Component {
 	}
 
   loadModel(url){
-		console.log('Forge Viewer is loading document:', url);
+		//console.log('Forge Viewer is loading document:', url);
 
     let modelId = `${url}`;
     let successHandler = this.handleLoadModelSuccess.bind(this);
